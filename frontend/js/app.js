@@ -1,5 +1,5 @@
 const SecrNote = {
-  API_URL: "http://localhost:3000/api",
+  API_URL: "https://secrnote-backend.onrender.com/api",
 
   // AES-256 encrypt using crypto-js
   encrypt(plainText, passphrase) {

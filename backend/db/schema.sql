@@ -1,6 +1,3 @@
--- Run this once in pgAdmin (Query Tool) to set up the database.
--- Right-click the secrnote database → Query Tool → paste this → Run.
-
 CREATE TABLE IF NOT EXISTS notes (
   id              SERIAL PRIMARY KEY,
   token           UUID NOT NULL UNIQUE,
