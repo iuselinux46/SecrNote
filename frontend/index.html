@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SecrNote — Write a Secure Note</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <a href="index.html" class="logo">
+      <svg width="15" height="20" viewBox="0 2 24 24" fill="none" stroke="var(--accent)" stroke-width="3"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="13" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      </svg>
+      secr<span class="dot">.</span>note
+    </a>
+    <nav class="steps">
+      <a href="index.html" class="active">Create</a>
+      <a href="link.html">Link</a>
+      <a href="view.html">View</a>
+      <a href="destroyed.html">Destroyed</a>
+    </nav>
+
+    <button id="themeToggle" class="theme-toggle" aria-label="Switch to light mode">
+
+      <svg class="theme-icon moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3
+             7 7 0 0 0 21 12.79z">
+        </path>
+      </svg>
+
+      <svg class="theme-icon sun-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="19.78" y1="4.22" x2="18.36" y2="5.64"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="19.78" y1="19.78" x2="18.36" y2="18.36"></line>
+      </svg>
+    </button>
+  </header>
+
+  <main>
+    <div class="card">
+      <h1 class="screen-title">Write a secure note</h1>
+      <p class="screen-sub">Your note is encrypted before it leaves your browser!</p>
+
+      <form id="createForm">
+        <!-- Note type -->
+        <div class="field">
+          <label class="field-label">Note type</label>
+          <div class="toggle-row">
+            <button type="button" id="btnStandard" class="active">
+              <svg class="theme-icon link-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="15"
+                viewBox="0 0 25 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              Standard</button>
+            <button type="button" id="btnTimed">
+              <svg class="theme-icon clock-icon" xmlns="http://w3.org" width="18" height="14" viewBox="0 0 25 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              Timed Read</button>
+          </div>
+          <div class="sub-panel" id="timedPanel">
+            <div style="font-size:14px;color:#271e49;margin-bottom:10px;line-height:1.5;">
+              Note auto-destroys after the recipient reads it for the selected duration. Use for highly sensitive
+              content.
+            </div>
+            <label class="field-label">Reading window</label>
+            <select id="readSeconds">
+              <option value="30">30 seconds</option>
+              <option value="60">1 minute</option>
+              <option value="120">2 minutes</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Note body -->
+        <div class="field">
+          <label class="field-label">Note</label>
+          <textarea id="noteText" placeholder="Type your message here..."></textarea>
+        </div>
+
+        <!-- Passphrase -->
+        <div class="field">
+          <label class="field-label">Passphrase</label>
+          <input type="password" id="passphrase" value="" placeholder="Shared with recipient separately" />
+        </div>
+
+        <!-- Expiry -->
+        <div class="field">
+          <label class="field-label">Auto-delete if unopened</label>
+          <select id="expiry">
+            <option value="1h">1 hour</option>
+            <option value="24h" selected>24 hours</option>
+            <option value="7d">7 days</option>
+          </select>
+        </div>
+
+        <!-- Read receipt -->
+        <div class="field">
+          <label class="field-label">Read receipt</label>
+          <div class="switch-row" style="border-radius: 20px;">
+            <span class="switch-label">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#271e49" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+              <div style="color: #271e49"> Notify me when the note is opened </div>
+            </span>
+            <button type="button" id="receiptToggle" class="switch-track on">
+              <span class="switch-thumb"></span>
+            </button>
+          </div>
+          <div class="sub-panel visible" id="receiptPanel" style="border-radius: 20px;">
+            <label class="field-label">Your email</label>
+            <input type="email" id="receiptEmail" value="user@gmail.com"
+              placeholder="We'll notify you the moment it's opened" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          Encrypt &amp; Generate Link
+        </button>
+        <p class="hint">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          AES-256 encryption · client-side encryption · link works once
+        </p>
+      </form>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/create.js"></script>
+</body>
+
+</html>
