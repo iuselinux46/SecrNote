@@ -55,8 +55,8 @@
 
   <main>
     <div class="card">
-      <h1 class="screen-title">Write a secure note</h1>
-      <p class="screen-sub">Your note is encrypted before it leaves your browser!</p>
+      <h1 class="screen-title" style="color: var(--accent-strong2);">Write a secure note</h1>
+      <p class="screen-sub" style="color: var(--text-mute);">Your note is encrypted before it leaves your browser!</p>
 
       <form id="createForm">
         <!-- Note type -->
@@ -96,13 +96,13 @@
         <!-- Note body -->
         <div class="field">
           <label class="field-label">Note</label>
-          <textarea id="noteText" placeholder="Type your message here..."></textarea>
+          <textarea id="noteText" placeholder="Type something you won't say out loud..."></textarea>
         </div>
 
         <!-- Passphrase -->
         <div class="field">
-          <label class="field-label">Passphrase</label>
-          <input type="password" id="passphrase" value="" placeholder="Shared with recipient separately" />
+          <label class="field-label">Password</label>
+          <input type="password" id="passphrase" value="" placeholder="Extra Security... Great!" />
         </div>
 
         <!-- Expiry -->

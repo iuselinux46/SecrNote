@@ -9,7 +9,7 @@
   --text-mute: #9cb0cd;
   --accent: #a78bfa;
   --accent-strong: #7c3aed;
-  --accent-strong2: #6d28d9;
+  --accent-strong2: #b8a2da;
   --accent-soft-bg: rgba(124, 58, 237, 0.08);
   --accent-soft-border: rgba(124, 58, 237, 0.25);
   --selected-bg: #2d2b55;
@@ -39,7 +39,7 @@
   --accent-strong2: #6d28d9;
   --accent-soft-bg: rgba(124, 58, 237, 0.08);
   --accent-soft-border: rgba(124, 58, 237, 0.25);
-  --selected-bg: #d6d5ea;
+  --selected-bg: #e0e0e9de;
   --yellow: #433a14;
   --yellow-border: rgba(237, 185, 29, 0.474);
   --yellow-bg: rgba(210, 204, 186, 0.08);
@@ -717,7 +717,7 @@ svg {
   header.topbar {
     grid-template-columns: 1fr;
     gap: 10px;
-    padding: 10px 12px;
+    padding: 10px 5px ;
     height: auto;
   }
 
@@ -728,16 +728,17 @@ svg {
   .nav-group {
     grid-column: 1 / -1;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
-  nav.steps {
-    grid-column: 1 / -1;
-    justify-content: center;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding-bottom: 10px;
+  .nav-group {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  width: 100%;
   }
 
   nav.steps::-webkit-scrollbar {
@@ -753,31 +754,33 @@ svg {
   nav.steps a.active {
   background: var(--selected-bg);
   color: var(--accent);
-  height: fit-content;
-  width: fit-content;
   box-shadow:
-        0 5px 10px rgba(0,0,0,.35),
-        inset 0 1px rgba(255,255,255,.05);
+    0 5px 10px rgba(0, 0, 0, 0.35),
+    inset 0 1px rgba(255,255,255,.05);
   }
 
   .theme-toggle {
-    grid-column: 1 / -1;
-    width: 25px;
-    height: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    justify-self: end;
-    border: 0px solid var(--border);
-    border-radius: 10px;
-    background: var(--surface);
-    color: var(--text);
-    cursor: pointer;
-    transition:
-        background .25s ease,
-        transform .2s ease,
-        border-color .25s ease;
-  }
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+
+  cursor: pointer;
+
+  transition:
+    background .25s ease,
+    transform .2s ease,
+    color .25s ease;
+}
 
   main {
     padding: 20px 12px 10px;
