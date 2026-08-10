@@ -105,8 +105,8 @@ header.topbar {
   gap: 6px;
   font-family: "Courier New", monospace;
   font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  font-weight: 650;
+  letter-spacing: 0.01em;
   color: var(--accent);
   text-decoration: none;
   margin-right: 10px;
