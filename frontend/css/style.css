@@ -586,7 +586,7 @@ select {
   border-radius: 20px;
   padding: 18px 20px;
   font-size: 14px;
-  color: #000000;
+  color: var(--text);
   line-height: 1.7;
   min-height: 100px;
   margin-bottom: 20px;
