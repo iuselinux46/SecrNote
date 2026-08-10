@@ -104,9 +104,9 @@ header.topbar {
   justify-self: start;
   gap: 6px;
   font-family: "Courier New", monospace;
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 650;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   color: var(--accent);
   text-decoration: none;
   margin-right: 10px;
