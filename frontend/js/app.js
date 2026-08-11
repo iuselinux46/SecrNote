@@ -24,7 +24,6 @@ const SecrNote = {
 };
 
 // Theme Toggle
-
 const themeToggle = document.getElementById("themeToggle");
 
 function setTheme(theme) {
