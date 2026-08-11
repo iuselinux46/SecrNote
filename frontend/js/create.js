@@ -1,9 +1,19 @@
 const btnStandard = document.getElementById("btnStandard");
 const btnTimed = document.getElementById("btnTimed");
 const timedPanel = document.getElementById("timedPanel");
-
+const passphraseToggle = document.getElementById("passphraseToggle");
+const passphrasePanel = document.getElementById("passphrasePanel");
+let passphraseOn = false;
 let noteType = "standard";
 
+// Passphrase toggle
+passphraseToggle.addEventListener("click", () => {
+  passphraseOn = !passphraseOn;
+  passphraseToggle.classList.toggle("on", passphraseOn);
+  passphrasePanel.classList.toggle("visible", passphraseOn);
+});
+
+// Note type toggle
 btnStandard.addEventListener("click", () => {
   noteType = "standard";
   btnStandard.classList.add("active");
@@ -34,18 +44,34 @@ document.getElementById("createForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const noteText = document.getElementById("noteText").value.trim();
-  const passphrase = document.getElementById("passphrase").value;
   const expiry = document.getElementById("expiry").value;
   const readSeconds = Number(document.getElementById("readSeconds").value);
   const receiptEmail = document.getElementById("receiptEmail").value;
 
-  if (!noteText || !passphrase) {
-    alert("Please enter both a note and a passphrase.");
+  if (!noteText) {
+    alert("Please enter a note.");
     return;
   }
 
-  // Encrypt client-side before sending — server never sees plaintext
-  const encrypted_text = SecrNote.encrypt(noteText, passphrase);
+  // Determine encryption key
+  let encryptionKey;
+  if (passphraseOn) {
+    const passphrase = document.getElementById("passphrase").value;
+    if (!passphrase) {
+      alert("Please enter a passphrase or turn off passphrase protection.");
+      return;
+    }
+    encryptionKey = passphrase;
+  } else {
+    // Generate a random 32-byte key — embedded in the link after #
+    const array = new Uint8Array(32);
+    window.crypto.getRandomValues(array);
+    encryptionKey = Array.from(array)
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join("");
+  }
+
+  const encrypted_text = SecrNote.encrypt(noteText, encryptionKey);
 
   const submitBtn = document.querySelector(".btn-primary");
   submitBtn.textContent = "Encrypting...";
@@ -62,6 +88,7 @@ document.getElementById("createForm").addEventListener("submit", async (e) => {
         expiry,
         receipt: receiptOn,
         receipt_email: receiptOn ? receiptEmail : null,
+        passphrase_protected: passphraseOn,
       }),
     });
 
@@ -74,14 +101,19 @@ document.getElementById("createForm").addEventListener("submit", async (e) => {
       return;
     }
 
-    // Store only what the next pages need — no sensitive data
+    // Build the correct link — key goes in fragment if no passphrase
+    const link = passphraseOn
+      ? `${SecrNote.BASE_URL}/view.html?token=${data.token}`
+      : `${SecrNote.BASE_URL}/view.html?token=${data.token}#key=${encryptionKey}`;
+
     sessionStorage.setItem("secrnote_token", data.token);
-    sessionStorage.setItem("secrnote_link", data.link);
+    sessionStorage.setItem("secrnote_link", link);
     sessionStorage.setItem("secrnote_type", noteType);
     sessionStorage.setItem("secrnote_read_seconds", readSeconds);
     sessionStorage.setItem("secrnote_expiry", expiry);
     sessionStorage.setItem("secrnote_receipt", receiptOn);
     sessionStorage.setItem("secrnote_receipt_email", receiptEmail);
+    sessionStorage.setItem("secrnote_passphrase_protected", passphraseOn);
 
     window.location.href = "link.html";
   } catch (err) {

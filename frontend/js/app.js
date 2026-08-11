@@ -1,5 +1,6 @@
 const SecrNote = {
   API_URL: "https://secrnote-backend.onrender.com/api",
+  BASE_URL: "https://secr-note.vercel.app",
 
   // AES-256 encrypt using crypto-js
   encrypt(plainText, passphrase) {

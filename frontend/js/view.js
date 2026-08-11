@@ -6,61 +6,106 @@ if (!token) {
   window.location.href = "index.html";
 }
 
-const lockedState   = document.getElementById("lockedState");
-const unlockedState = document.getElementById("unlockedState");
-const timedNotice   = document.getElementById("timedNotice");
+// Check if decryption key is embedded in URL fragment
+const hash    = window.location.hash;
+const autoKey = hash.startsWith("#key=") ? hash.slice(5) : null;
+
+const lockedState     = document.getElementById("lockedState");
+const unlockedState   = document.getElementById("unlockedState");
+const timedNotice     = document.getElementById("timedNotice");
 const timedNoticeText = document.getElementById("timedNoticeText");
-const lockedWarning = document.getElementById("lockedWarning");
+const lockedWarning   = document.getElementById("lockedWarning");
+const errorMsg        = document.getElementById("errorMsg");
 
-// We don't know the note type yet until we fetch — show generic warning
-lockedWarning.textContent = "Opening this note is irreversible — it will be deleted immediately after decryption.";
+// If key is in URL, skip the locked screen and auto-decrypt
+if (autoKey) {
+  lockedState.style.display = "none";
+  autoDecrypt(autoKey);
+} else {
+  // Passphrase required — show locked screen
+  lockedWarning.textContent = "Opening this note is irreversible — it will be deleted immediately after decryption.";
 
-document.getElementById("decryptBtn").addEventListener("click", async () => {
-  const passphrase = document.getElementById("unlockPassphrase").value;
+  document.getElementById("decryptBtn").addEventListener("click", async () => {
+    const passphrase = document.getElementById("unlockPassphrase").value;
 
-  if (!passphrase) {
-    document.getElementById("errorMsg").textContent = "Please enter the passphrase.";
-    document.getElementById("errorMsg").style.display = "block";
-    return;
-  }
+    if (!passphrase) {
+      errorMsg.textContent = "Please enter the passphrase.";
+      errorMsg.style.display = "block";
+      return;
+    }
 
-  const decryptBtn = document.getElementById("decryptBtn");
-  decryptBtn.textContent = "Fetching...";
-  decryptBtn.disabled = true;
+    const decryptBtn = document.getElementById("decryptBtn");
+    decryptBtn.textContent = "Fetching...";
+    decryptBtn.disabled = true;
 
+    try {
+      const response = await fetch(`${SecrNote.API_URL}/notes/${token}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        errorMsg.textContent = data.error;
+        errorMsg.style.display = "block";
+        decryptBtn.textContent = "Decrypt & View Note";
+        decryptBtn.disabled = false;
+        return;
+      }
+
+      const plainText = SecrNote.decrypt(data.encrypted_text, passphrase);
+
+      if (!plainText) {
+        errorMsg.textContent = "Incorrect passphrase. The note has been destroyed.";
+        errorMsg.style.display = "block";
+        decryptBtn.textContent = "Decrypt & View Note";
+        decryptBtn.disabled = false;
+        return;
+      }
+
+      unlockNote(plainText, data.note_type, data.read_seconds);
+
+    } catch (err) {
+      errorMsg.textContent = "Could not reach the server.";
+      errorMsg.style.display = "block";
+      decryptBtn.textContent = "Decrypt & View Note";
+      decryptBtn.disabled = false;
+    }
+  });
+}
+
+// Auto-decrypt using key from URL fragment (no passphrase needed)
+async function autoDecrypt(key) {
   try {
     const response = await fetch(`${SecrNote.API_URL}/notes/${token}`);
     const data = await response.json();
 
     if (!response.ok) {
-      // 404 = already read or never existed, 410 = expired
-      document.getElementById("errorMsg").textContent = data.error;
-      document.getElementById("errorMsg").style.display = "block";
-      decryptBtn.textContent = "Decrypt & View Note";
-      decryptBtn.disabled = false;
+      // Show locked screen with error
+      lockedState.style.display = "block";
+      lockedWarning.textContent = data.error;
+      // Hide decrypt button since there's no passphrase to enter
+      document.getElementById("decryptBtn").style.display = "none";
+      document.querySelector(".field").style.display = "none";
       return;
     }
 
-    // Note is now deleted on the server — decrypt client-side
-    const plainText = SecrNote.decrypt(data.encrypted_text, passphrase);
+    const plainText = SecrNote.decrypt(data.encrypted_text, key);
 
     if (!plainText) {
-      document.getElementById("errorMsg").textContent = "Incorrect passphrase. The note has been destroyed.";
-      document.getElementById("errorMsg").style.display = "block";
-      decryptBtn.textContent = "Decrypt & View Note";
-      decryptBtn.disabled = false;
+      lockedState.style.display = "block";
+      lockedWarning.textContent = "Decryption failed — the link may be corrupted.";
+      document.getElementById("decryptBtn").style.display = "none";
+      document.querySelector(".field").style.display = "none";
       return;
     }
 
     unlockNote(plainText, data.note_type, data.read_seconds);
 
   } catch (err) {
-    document.getElementById("errorMsg").textContent = "Could not reach the server.";
-    document.getElementById("errorMsg").style.display = "block";
-    decryptBtn.textContent = "Decrypt & View Note";
-    decryptBtn.disabled = false;
+    lockedState.style.display = "block";
+    lockedWarning.textContent = "Could not reach the server.";
+    document.getElementById("decryptBtn").style.display = "none";
+    document.querySelector(".field").style.display = "none";
   }
-});
+}
 
 function unlockNote(plainText, noteType, readSeconds) {
   lockedState.style.display = "none";
