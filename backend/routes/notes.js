@@ -84,7 +84,7 @@ router.get("/:token", async (req, res) => {
 
     if (note.receipt && note.receipt_email) {
       const timestamp = new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC";
-      sendReadReceipt(note.receipt_email, timestamp);
+      await sendReadReceipt(note.receipt_email, timestamp);
     }
 
     res.status(200).json({
