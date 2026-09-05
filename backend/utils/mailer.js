@@ -1,6 +1,8 @@
 const { Resend } = require("resend");
 require("dotenv").config();
 
+console.log("RESEND_API_KEY loaded:", process.env.RESEND_API_KEY ? "YES" : "NO - MISSING");
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendReadReceipt(to, timestamp) {
