@@ -81,17 +81,18 @@ router.get("/:token", async (req, res) => {
     }
 
     await pool.query("DELETE FROM notes WHERE token = $1", [token]);
+    
+    res.status(200).json({
+      encrypted_text: note.encrypted_text,
+      note_type: note.note_type,
+      read_seconds: note.read_seconds,
+    });
 
     if (note.receipt && note.receipt_email) {
       const timestamp = new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC";
       await sendReadReceipt(note.receipt_email, timestamp);
     }
 
-    res.status(200).json({
-      encrypted_text: note.encrypted_text,
-      note_type: note.note_type,
-      read_seconds: note.read_seconds,
-    });
   } catch (err) {
     console.error("GET /api/notes/:token error:", err.message);
     res.status(500).json({ error: "Failed to retrieve note." });
