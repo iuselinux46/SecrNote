@@ -1,5 +1,8 @@
 require("dotenv").config();
 
+console.log("BREVO_KEY length:", process.env.BREVO_API_KEY?.length);
+console.log("BREVO_KEY starts with:", process.env.BREVO_API_KEY?.substring(0, 12));
+
 async function sendReadReceipt(to, timestamp) {
   console.log("Sending read receipt to:", to);
   try {
