@@ -4,6 +4,7 @@ require("dotenv").config();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendReadReceipt(to, timestamp) {
+  console.log("sendReadReceipt called for:", to);
   try {
     await resend.emails.send({
       from: process.env.RESEND_FROM,
