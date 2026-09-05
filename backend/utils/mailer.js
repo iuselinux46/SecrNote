@@ -1,11 +1,14 @@
 const nodemailer = require("nodemailer");
+const dns = require("dns");
 require("dotenv").config();
+
+// Force Node.js to prefer IPv4 globally
+dns.setDefaultResultOrder("ipv4first");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
   secure: true,
-  family: 4,            // Force IPv4 — fixes Render's IPv6 issue
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
