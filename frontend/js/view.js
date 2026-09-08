@@ -1,18 +1,18 @@
 // Get token from URL query string: view.html?token=xxxx
 const params = new URLSearchParams(window.location.search);
-const token  = params.get("token");
+const token = params.get("token");
 
 if (!token) {
   document.querySelector(".card").style.display = "none";
   document.getElementById("emptyState").style.display = "block";
 } else {
-  const hash    = window.location.hash;
+  const hash = window.location.hash;
   const autoKey = hash.startsWith("#key=") ? hash.slice(5) : null;
 
-  const lockedState     = document.getElementById("lockedState");
-  const unlockedState   = document.getElementById("unlockedState");
-  const lockedWarning   = document.getElementById("lockedWarning");
-  const errorMsg        = document.getElementById("errorMsg");
+  const lockedState = document.getElementById("lockedState");
+  const unlockedState = document.getElementById("unlockedState");
+  const lockedWarning = document.getElementById("lockedWarning");
+  const errorMsg = document.getElementById("errorMsg");
 
   if (autoKey) {
     lockedState.style.display = "none";
@@ -106,8 +106,8 @@ if (!token) {
     document.getElementById("noteBox").textContent = plainText;
 
     const standardActions = document.getElementById("standardActions");
-    const timerWrap       = document.getElementById("timerWrap");
-    const unlockedSub     = document.getElementById("unlockedSub");
+    const timerWrap = document.getElementById("timerWrap");
+    const unlockedSub = document.getElementById("unlockedSub");
 
     if (noteType === "timed") {
       unlockedSub.textContent = "Read carefully. This note destroys itself when the timer runs out.";
@@ -121,21 +121,21 @@ if (!token) {
 
   function startCountdown(totalSeconds) {
     let remaining = totalSeconds;
-    const timerNum      = document.getElementById("timerNum");
-    const timerRing     = document.getElementById("timerRing");
+    const timerNum = document.getElementById("timerNum");
+    const timerRing = document.getElementById("timerRing");
     const timerWarnText = document.getElementById("timerWarnText");
-    const noteBox       = document.getElementById("noteBox");
+    const noteBox = document.getElementById("noteBox");
 
     function render() {
       const pct = remaining / totalSeconds;
       timerNum.textContent = remaining;
 
-      let color = "#A78BFA";
-      if (pct <= 0.3 && pct > 0.1) color = "#FBBF24";
-      if (pct <= 0.1) color = "#F87171";
-
+      let color = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+      if (pct <= 0.3 && pct > 0.1) color = "#f5b615";
+      if (pct <= 0.1) color = "#f84b4b";
+      
       timerNum.style.color = color;
-      timerRing.style.background = `conic-gradient(${color} ${pct * 360}deg, #1E1E3A ${pct * 360}deg)`;
+      timerRing.style.background = `conic-gradient(${color} ${pct * 360}deg, var(--timer-track) ${pct * 360}deg)`;
 
       if (remaining > 10) {
         timerWarnText.textContent = "Note will self-destruct when timer ends";

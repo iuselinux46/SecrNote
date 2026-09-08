@@ -23,6 +23,7 @@
   --green: #4ade80;
   --green-border: rgba(74, 222, 128, 0.25);
   --green-bg: rgba(74, 222, 128, 0.08);
+  --timer-track: #1e1e3a;
 }
 
 [data-theme="light"] {
@@ -50,6 +51,7 @@
   --green: #4ade80;
   --green-border: rgba(74, 222, 128, 0.25);
   --green-bg: rgba(74, 222, 128, 0.08);
+  --timer-track: #dedee8;
 }
 
 * {
@@ -634,7 +636,10 @@ select {
   align-items: center;
   justify-content: center;
   margin-bottom: 8px;
-  background: conic-gradient(var(--accent) 0deg, var(--border-soft) 0deg);
+  background: conic-gradient(
+        var(--timer-color) var(--timer-progress),
+        var(--border-soft) var(--timer-progress)
+    );
 }
 
 .timer-ring-inner {
